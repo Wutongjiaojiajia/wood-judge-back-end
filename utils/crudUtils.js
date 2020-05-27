@@ -268,9 +268,9 @@ function updateSql(tableName,condition,callback) {
                         let valueArr=specifiedObject[item].split(",");
                         //批量更新相同字段
                         if(valueArr.length>1){
-                            let tempStr;
-                            valueArr.forEach((item,index) => {
-                                tempStr+=index===0?`\'${item}\'`:`,\'${item}\'`;
+                            let tempStr = "";
+                            valueArr.forEach((vItem,index) => {
+                                tempStr+=index===0?`\'${vItem}\'`:`,\'${vItem}\'`;
                             });
                             whereRowStr+=`AND ${item} IN (${tempStr}) `;
                         //单条更新
@@ -310,6 +310,7 @@ function updateSql(tableName,condition,callback) {
                     return;
                 }
                 let sql=`UPDATE ${tableName} SET ${setRowStr} WHERE 1=1 ${whereRowStr}`;
+                console.log("sql",sql);
                 callback(sql);
             }
         }
