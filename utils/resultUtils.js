@@ -1,5 +1,15 @@
 const resultEntity=require('../model/resultEntity');
 
+
+/**
+ * @method querySuccessResult
+ * @description 返回查询成功结果
+ * @param {Number} code
+ * @param {String} info
+ * @param {Array} rows
+ * @param {Number} total
+ * @returns
+ */
 //返回查询成功结果
 function querySuccessResult(code,info,rows,total) {
     let qse =new resultEntity.querySuccessEntity();

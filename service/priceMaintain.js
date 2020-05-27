@@ -1,11 +1,11 @@
 const connection=require('../config/databaseConfig');
 const resultUtils=require('../utils/resultUtils');
 const sqlTmpl=require('../utils/crudUtils');
-
+const tableName = 'tbl_priceMaintain';
 module.exports={
     //查询全部用户信息或根据条件进行查询
-    getUserList:(req,res,next)=>{
-        sqlTmpl.querySql('test_person_info',req.query,(sql)=>{
+    getPriceMaintainList:(req,res,next)=>{
+        sqlTmpl.querySql(tableName,req.query,(sql)=>{
             if(sql===""){
                 res.send(resultUtils.queryFailureResult(0,"传参格式错误"));
             }else{
@@ -21,8 +21,8 @@ module.exports={
         });
     },
     //新增用户信息
-    addUser:(req,res,next)=>{
-        sqlTmpl.addSql('test_person_info',req.body,(sql)=>{
+    addPriceMaintainData:(req,res,next)=>{
+        sqlTmpl.addSql(tableName,req.body,(sql)=>{
             if(sql===""){
                 res.send(resultUtils.operateFailureResult(0,"传参格式错误"));
             }else{
@@ -37,8 +37,8 @@ module.exports={
         });
     },
     //更新用户信息
-    editUser:(req,res,next)=>{
-        sqlTmpl.updateSql('test_person_info',req.body,(sql)=>{
+    updatePriceMaintainData:(req,res,next)=>{
+        sqlTmpl.updateSql(tableName,req.body,(sql)=>{
             if(sql===""){
                 res.send(resultUtils.operateFailureResult(0,"传参格式错误"));
             }else{
@@ -53,8 +53,8 @@ module.exports={
         });
     },
     //删除用户信息
-    deleteUser:(req,res,next)=>{
-        sqlTmpl.deleteSql('test_person_info',req.body,(sql)=>{
+    deletePriceMaintainData:(req,res,next)=>{
+        sqlTmpl.deleteSql(tableName,req.body,(sql)=>{
             if(sql===""){
                 res.send(resultUtils.operateFailureResult(0,"传参格式错误"));
             }else{

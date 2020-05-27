@@ -157,7 +157,7 @@ function querySql(tableName,condition,callback) {
 function addSql(tableName,condition,callback) {
     //查询当前表的所有字段
     let tableField=`SELECT COLUMN_NAME,EXTRA FROM information_schema.COLUMNS WHERE TABLE_NAME='${tableName}'`;    //查询表的字段
-    connection.query(tableField,(err,result)=>{
+    connection(tableField,(err,result)=>{
         if(err){
             callback("");
         }else{
@@ -209,7 +209,7 @@ function addSql(tableName,condition,callback) {
                             tempStr=`\'${condition[item]}\'`
                             break;
                         default:
-                            tempStr=`${condition[iItem]}`;
+                            tempStr=`${condition[item]}`;
                             break;
                     }
                     valueStr+=index===0?`${tempStr}`:`,${tempStr}`;
@@ -244,7 +244,7 @@ function addSql(tableName,condition,callback) {
 function updateSql(tableName,condition,callback) {
     //查询当前表的主键
     let queryPrimaryKey=`SELECT COLUMN_NAME,COLUMN_KEY FROM information_schema.COLUMNS WHERE TABLE_NAME='${tableName}'`;
-    connection.query(queryPrimaryKey,(err,result)=>{
+    connection(queryPrimaryKey,(err,result)=>{
         if(err){
             callback("");
         }else{
@@ -338,7 +338,6 @@ function deleteSql(tableName,condition,callback){
             whereRowStr+=` AND ${item} IN (${tempStr})`;
         });
         let sql=`DELETE FROM ${tableName} WHERE 1=1${whereRowStr}`;
-        console.log("999",sql);
         callback(sql);
     }else{
         callback("");
