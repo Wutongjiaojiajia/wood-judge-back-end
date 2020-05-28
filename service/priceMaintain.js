@@ -3,7 +3,7 @@ const resultUtils=require('../utils/resultUtils');
 const sqlTmpl=require('../utils/crudUtils');
 const tableName = 'tbl_priceMaintain';
 module.exports={
-    //查询全部用户信息或根据条件进行查询
+    //查询全部板价信息或根据条件进行查询
     getPriceMaintainList:(req,res,next)=>{
         sqlTmpl.querySql(tableName,req.query,(sql)=>{
             if(sql===""){
@@ -20,7 +20,7 @@ module.exports={
             }
         });
     },
-    //新增用户信息
+    //新增板价信息
     addPriceMaintainData:(req,res,next)=>{
         sqlTmpl.addSql(tableName,req.body,(sql)=>{
             if(sql===""){
@@ -36,7 +36,7 @@ module.exports={
             }
         });
     },
-    //更新用户信息
+    //更新板价信息
     updatePriceMaintainData:(req,res,next)=>{
         sqlTmpl.updateSql(tableName,req.body,(sql)=>{
             if(sql===""){
@@ -52,7 +52,7 @@ module.exports={
             }
         });
     },
-    //删除用户信息
+    //删除板价信息
     deletePriceMaintainData:(req,res,next)=>{
         sqlTmpl.deleteSql(tableName,req.body,(sql)=>{
             if(sql===""){

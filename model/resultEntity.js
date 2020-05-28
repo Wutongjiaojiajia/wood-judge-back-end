@@ -80,8 +80,8 @@ class operateFailureEntity extends baseEntity{
 
 //导出
 module.exports={
-    querySuccessEntity:querySuccessEntity,
-    queryFailureEntity:queryFailureEntity,
-    operateSuccessEntity:operateSuccessEntity,
-    operateFailureEntity:operateFailureEntity
+    querySuccessEntity,
+    queryFailureEntity,
+    operateSuccessEntity,
+    operateFailureEntity
 }

@@ -310,7 +310,6 @@ function updateSql(tableName,condition,callback) {
                     return;
                 }
                 let sql=`UPDATE ${tableName} SET ${setRowStr} WHERE 1=1 ${whereRowStr}`;
-                console.log("sql",sql);
                 callback(sql);
             }
         }
@@ -346,8 +345,8 @@ function deleteSql(tableName,condition,callback){
 }
 
 module.exports={
-    querySql:querySql,
-    addSql:addSql,
-    updateSql:updateSql,
-    deleteSql:deleteSql
+    querySql,
+    addSql,
+    updateSql,
+    deleteSql
 }

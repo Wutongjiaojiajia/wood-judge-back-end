@@ -7,6 +7,6 @@ function validPositiveInteger(params) {
 }
 
 module.exports={
-    splitObjAttr:splitObjAttr,
-    validPositiveInteger:validPositiveInteger
+    splitObjAttr,
+    validPositiveInteger
 }

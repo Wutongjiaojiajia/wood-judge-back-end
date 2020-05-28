@@ -52,8 +52,8 @@ function operateFailureResult(code,info){
 }
 
 module.exports={
-    querySuccessResult:querySuccessResult,  //查询成功结果
-    queryFailureResult:queryFailureResult,  //查询失败结果
-    operateSuccessResult:operateSuccessResult,  //操作成功结果
-    operateFailureResult:operateFailureResult   //操作失败结果
+    querySuccessResult,  //查询成功结果
+    queryFailureResult,  //查询失败结果
+    operateSuccessResult,  //操作成功结果
+    operateFailureResult   //操作失败结果
 }
