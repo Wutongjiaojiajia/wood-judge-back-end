@@ -23,8 +23,8 @@ const publicUtils=require('./publicUtils');
  *          currentPage:1
  *      }
  * */
-function querySql(tableName,condition,callback) {
-    try {
+function querySql(tableName,condition){
+    return new Promise((resolve,reject)=>{
         let sql=`SELECT * FROM ${tableName} WHERE 1=1 `;
         //精确交集查询
         if(condition.eqParams){
@@ -48,8 +48,7 @@ function querySql(tableName,condition,callback) {
                     })
                 }
             }else{
-                callback("");
-                return;
+                reject("");
             }
         }
         //模糊查询
@@ -71,8 +70,7 @@ function querySql(tableName,condition,callback) {
                     })
                 }
             }else{
-                callback("");
-                return;
+                reject("");
             }
         }
         //精确合集查询
@@ -90,7 +88,7 @@ function querySql(tableName,condition,callback) {
                     });
                 }
             }else{
-                callback("");
+                reject("");
                 return;
             }
         }
@@ -109,7 +107,7 @@ function querySql(tableName,condition,callback) {
                     });
                 }
             }else{
-                callback("");
+                reject("");
                 return;
             }
         }
@@ -119,7 +117,7 @@ function querySql(tableName,condition,callback) {
                 let tempStr=condition.orderBy.replace(/\"/g,"").replace(/\'/g,"");
                 sql+=`ORDER BY ${tempStr} `;
             }else{
-                callback("");
+                reject("");
                 return;
             }
         }
@@ -131,14 +129,12 @@ function querySql(tableName,condition,callback) {
                 let pageSize=Number(condition.pageSize);
                 sql+=`LIMIT ${(currentPage-1)*pageSize},${pageSize}`;
             }else{
-                callback("");
+                reject("");
                 return;
             }
         }
-        callback(sql);
-    } catch (error) {
-        callback("");
-    }
+        resolve(sql);
+    })
 }
 /**
  * 生成新增语句 
@@ -154,71 +150,73 @@ function querySql(tableName,condition,callback) {
  *          "age":12
  *      }
  */
-function addSql(tableName,condition,callback) {
-    //查询当前表的所有字段
-    let tableField=`SELECT COLUMN_NAME,EXTRA FROM information_schema.COLUMNS WHERE TABLE_NAME='${tableName}'`;    //查询表的字段
-    connection(tableField,(err,result)=>{
-        if(err){
-            callback("");
-        }else{
-            let autoIncreaseKey=[];
-            let insertFieldArr=[];
-            result.forEach(item => {
-                if(item.EXTRA==='auto_increment'){
-                    autoIncreaseKey.push(item.COLUMN_NAME); //自增列数组
+function addSql(tableName,condition) {
+    return new Promise((resolve,reject)=>{
+        //查询当前表的所有字段
+        let tableField=`SELECT COLUMN_NAME,EXTRA FROM information_schema.COLUMNS WHERE TABLE_NAME='${tableName}'`;    //查询表的字段
+        connection(tableField,(err,result)=>{
+            if(err){
+                reject("");
+            }else{
+                let autoIncreaseKey=[];
+                let insertFieldArr=[];
+                result.forEach(item => {
+                    if(item.EXTRA==='auto_increment'){
+                        autoIncreaseKey.push(item.COLUMN_NAME); //自增列数组
+                    }else{
+                        insertFieldArr.push(item.COLUMN_NAME);  //需要插入字段数组
+                    }
+                });
+                let insertFieldStr=insertFieldArr.join(",");    //需要插入字段字符串
+                let sql=`INSERT INTO ${tableName}(${insertFieldStr}) VALUES `;
+                //批量插入
+                if(Array.isArray(condition)){
+                    //循环条件数组
+                    condition.forEach((cItem,cIndex) => {    //cItem -> obj
+                        let valueStr="";    //插入内容字符串
+                        insertFieldArr.forEach((iItem,iIndex) => {   //iItem -> string
+                            let tempStr;
+                            if(cItem[iItem]===undefined){
+                                cItem[iItem]=null;
+                            }
+                            switch (typeof(cItem[iItem])) {
+                                case 'string':
+                                    tempStr=`\'${cItem[iItem]}\'`;
+                                    break;
+                                default:
+                                    tempStr=`${cItem[iItem]}`;
+                                    break;
+                            }
+                            valueStr+=iIndex===0?`${tempStr}`:`,${tempStr}`;
+                        });
+                        sql+=cIndex===0?`(${valueStr})`:`,(${valueStr})`;
+                    });
+                    resolve(sql);
+                    return;
+                //单条插入
                 }else{
-                    insertFieldArr.push(item.COLUMN_NAME);  //需要插入字段数组
-                }
-            });
-            let insertFieldStr=insertFieldArr.join(",");    //需要插入字段字符串
-            let sql=`INSERT INTO ${tableName}(${insertFieldStr}) VALUES `;
-            //批量插入
-            if(Array.isArray(condition)){
-                //循环条件数组
-                condition.forEach((cItem,cIndex) => {    //cItem -> obj
-                    let valueStr="";    //插入内容字符串
-                    insertFieldArr.forEach((iItem,iIndex) => {   //iItem -> string
+                    let valueStr="";
+                    insertFieldArr.forEach((item,index) => {
                         let tempStr;
-                        if(cItem[iItem]===undefined){
-                            cItem[iItem]=null;
+                        if(condition[item]===undefined){
+                            condition[item]="";
                         }
-                        switch (typeof(cItem[iItem])) {
+                        switch (typeof(condition[item])) {
                             case 'string':
-                                tempStr=`\'${cItem[iItem]}\'`;
+                                tempStr=`\'${condition[item]}\'`
                                 break;
                             default:
-                                tempStr=`${cItem[iItem]}`;
+                                tempStr=`${condition[item]}`;
                                 break;
                         }
-                        valueStr+=iIndex===0?`${tempStr}`:`,${tempStr}`;
+                        valueStr+=index===0?`${tempStr}`:`,${tempStr}`;
                     });
-                    sql+=cIndex===0?`(${valueStr})`:`,(${valueStr})`;
-                });
-                callback(sql);
-                return;
-            //单条插入
-            }else{
-                let valueStr="";
-                insertFieldArr.forEach((item,index) => {
-                    let tempStr;
-                    if(condition[item]===undefined){
-                        condition[item]="";
-                    }
-                    switch (typeof(condition[item])) {
-                        case 'string':
-                            tempStr=`\'${condition[item]}\'`
-                            break;
-                        default:
-                            tempStr=`${condition[item]}`;
-                            break;
-                    }
-                    valueStr+=index===0?`${tempStr}`:`,${tempStr}`;
-                });
-                sql+=`(${valueStr})`;
-                callback(sql);
-                return;
+                    sql+=`(${valueStr})`;
+                    resolve(sql);
+                    return;
+                }
             }
-        }
+        })
     })
 }
 /** 
@@ -241,78 +239,80 @@ function addSql(tableName,condition,callback) {
  *          {"id":1,"name":"黄家豪","state":1}           
  *      ]
 */
-function updateSql(tableName,condition,callback) {
-    //查询当前表的主键
-    let queryPrimaryKey=`SELECT COLUMN_NAME,COLUMN_KEY FROM information_schema.COLUMNS WHERE TABLE_NAME='${tableName}'`;
-    connection(queryPrimaryKey,(err,result)=>{
-        if(err){
-            callback("");
-        }else{
-            let primaryKeyArr=[];
-            result.forEach(item => {
-                if(item.COLUMN_KEY==="PRI"){
-                    primaryKeyArr.push(item.COLUMN_NAME);   //获取到主键字段
-                }
-            });
-            //批量更新不同字段
-            if(Array.isArray(condition)){
-                callback("");
-                return;
+function updateSql(tableName,condition) {
+    return new Promise((resolve,reject)=>{
+        //查询当前表的主键
+        let queryPrimaryKey=`SELECT COLUMN_NAME,COLUMN_KEY FROM information_schema.COLUMNS WHERE TABLE_NAME='${tableName}'`;
+        connection(queryPrimaryKey,(err,result)=>{
+            if(err){
+                reject("");
             }else{
-                let specifiedObject=publicUtils.splitObjAttr(condition,primaryKeyArr);  // where子句条件对象(主键的obj)
-                let whereRowStr=""; //where子句
-                let setRowStr="";   //set语句
-                //传入条件中是否含有主键
-                if(Object.keys(specifiedObject).length!=0){
-                    Object.keys(specifiedObject).forEach(item => {
-                        let valueArr=((specifiedObject[item]).toString()).split(",");
-                        //批量更新相同字段
-                        if(valueArr.length>1){
-                            let tempStr = "";
-                            valueArr.forEach((vItem,index) => {
-                                tempStr+=index===0?`\'${vItem}\'`:`,\'${vItem}\'`;
-                            });
-                            whereRowStr+=`AND ${item} IN (${tempStr}) `;
-                        //单条更新
-                        }else{
+                let primaryKeyArr=[];
+                result.forEach(item => {
+                    if(item.COLUMN_KEY==="PRI"){
+                        primaryKeyArr.push(item.COLUMN_NAME);   //获取到主键字段
+                    }
+                });
+                //批量更新不同字段
+                if(Array.isArray(condition)){
+                    reject("");
+                    return;
+                }else{
+                    let specifiedObject=publicUtils.splitObjAttr(condition,primaryKeyArr);  // where子句条件对象(主键的obj)
+                    let whereRowStr=""; //where子句
+                    let setRowStr="";   //set语句
+                    //传入条件中是否含有主键
+                    if(Object.keys(specifiedObject).length!=0){
+                        Object.keys(specifiedObject).forEach(item => {
+                            let valueArr=((specifiedObject[item]).toString()).split(",");
+                            //批量更新相同字段
+                            if(valueArr.length>1){
+                                let tempStr = "";
+                                valueArr.forEach((vItem,index) => {
+                                    tempStr+=index===0?`\'${vItem}\'`:`,\'${vItem}\'`;
+                                });
+                                whereRowStr+=`AND ${item} IN (${tempStr}) `;
+                            //单条更新
+                            }else{
+                                let tempStr;
+                                switch (typeof(specifiedObject[item])) {
+                                    case 'string':
+                                        tempStr=`\'${specifiedObject[item]}\'`;
+                                        break;
+                                    default:
+                                        tempStr=`${specifiedObject[item]}`;
+                                        break;
+                                }
+                                whereRowStr+=`AND ${item}=${tempStr} `;
+                            }
+                        });
+                    }else{
+                        reject("");
+                        return;
+                    }
+                    //是否有传入更新条件
+                    if(Object.keys(condition).length!=0){
+                        Object.keys(condition).forEach((item,index) => {
                             let tempStr;
-                            switch (typeof(specifiedObject[item])) {
+                            switch (typeof(condition[item])) {
                                 case 'string':
-                                    tempStr=`\'${specifiedObject[item]}\'`;
+                                    tempStr=`\'${condition[item]}\'`;
                                     break;
                                 default:
-                                    tempStr=`${specifiedObject[item]}`;
+                                    tempStr=`${condition[item]}`;
                                     break;
                             }
-                            whereRowStr+=`AND ${item}=${tempStr} `;
-                        }
-                    });
-                }else{
-                    callback("");
-                    return;
+                            setRowStr+=index===0?`${item}=${tempStr}`:`,${item}=${tempStr}`;
+                        });
+                    }else{
+                        reject("");
+                        return;
+                    }
+                    let sql=`UPDATE ${tableName} SET ${setRowStr} WHERE 1=1 ${whereRowStr}`;
+                    resolve(sql);
                 }
-                //是否有传入更新条件
-                if(Object.keys(condition).length!=0){
-                    Object.keys(condition).forEach((item,index) => {
-                        let tempStr;
-                        switch (typeof(condition[item])) {
-                            case 'string':
-                                tempStr=`\'${condition[item]}\'`;
-                                break;
-                            default:
-                                tempStr=`${condition[item]}`;
-                                break;
-                        }
-                        setRowStr+=index===0?`${item}=${tempStr}`:`,${item}=${tempStr}`;
-                    });
-                }else{
-                    callback("");
-                    return;
-                }
-                let sql=`UPDATE ${tableName} SET ${setRowStr} WHERE 1=1 ${whereRowStr}`;
-                callback(sql);
             }
-        }
+        })
     })
 }
 /** 
@@ -326,22 +326,24 @@ function updateSql(tableName,condition,callback) {
  *      "id":"1,2,3,4"
  *    }
 */
-function deleteSql(tableName,condition,callback){
-    if(Object.keys(condition).length!=0){
-        let whereRowStr="";
-        Object.keys(condition).forEach(item => {
-            let tempStr="";
-            let valueArr=((condition[item]).toString()).split(",");    //{"id":"1,2,3,4"}
-            valueArr.forEach((vItem,vIndex) => {
-                tempStr+=vIndex===0?`\'${vItem}\'`:`,\'${vItem}\'`;                
+function deleteSql(tableName,condition){
+    return new Promise((resolve,reject)=>{
+        if(Object.keys(condition).length!=0){
+            let whereRowStr="";
+            Object.keys(condition).forEach(item => {
+                let tempStr="";
+                let valueArr=((condition[item]).toString()).split(",");    //{"id":"1,2,3,4"}
+                valueArr.forEach((vItem,vIndex) => {
+                    tempStr+=vIndex===0?`\'${vItem}\'`:`,\'${vItem}\'`;                
+                });
+                whereRowStr+=` AND ${item} IN (${tempStr})`;
             });
-            whereRowStr+=` AND ${item} IN (${tempStr})`;
-        });
-        let sql=`DELETE FROM ${tableName} WHERE 1=1${whereRowStr}`;
-        callback(sql);
-    }else{
-        callback("");
-    }
+            let sql=`DELETE FROM ${tableName} WHERE 1=1${whereRowStr}`;
+            resolve(sql);
+        }else{
+            reject("");
+        }
+    })
 }
 
 module.exports={
