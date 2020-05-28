@@ -81,7 +81,7 @@ function querySql(tableName,condition,callback) {
             if(typeof(tempObj)==='object'){
                 if(Object.keys(tempObj).length!=0){     //inParams里有内容
                     Object.keys(tempObj).forEach(item => {
-                        let valueArr=tempObj[item].split(",");  //{"age":"1,213"}
+                        let valueArr=((tempObj[item]).toString()).split(",");  //{"age":"1,213"}
                         let tempStr="";
                         valueArr.forEach((vItem,vIndex) => {
                             tempStr+=vIndex===0?`\'${vItem}\'`:`,\'${vItem}\'`;
@@ -100,7 +100,7 @@ function querySql(tableName,condition,callback) {
             if(typeof(tempObj)==='object'){
                 if(Object.keys(tempObj).length!=0){     //notInParams里有内容
                     Object.keys(tempObj).forEach(item => {
-                        let valueArr=tempObj[item].split(",");  //{"age":"1,213"}
+                        let valueArr=((tempObj[item]).toString()).split(",");  //{"age":"1,213"}
                         let tempStr="";
                         valueArr.forEach((vItem,vIndex) => {
                             tempStr+=vIndex===0?`\'${vItem}\'`:`,\'${vItem}\'`;                        
@@ -265,7 +265,7 @@ function updateSql(tableName,condition,callback) {
                 //传入条件中是否含有主键
                 if(Object.keys(specifiedObject).length!=0){
                     Object.keys(specifiedObject).forEach(item => {
-                        let valueArr=specifiedObject[item].split(",");
+                        let valueArr=((specifiedObject[item]).toString()).split(",");
                         //批量更新相同字段
                         if(valueArr.length>1){
                             let tempStr = "";
@@ -332,7 +332,7 @@ function deleteSql(tableName,condition,callback){
         let whereRowStr="";
         Object.keys(condition).forEach(item => {
             let tempStr="";
-            let valueArr=condition[item].split(",");    //{"id":"1,2,3,4"}
+            let valueArr=((condition[item]).toString()).split(",");    //{"id":"1,2,3,4"}
             valueArr.forEach((vItem,vIndex) => {
                 tempStr+=vIndex===0?`\'${vItem}\'`:`,\'${vItem}\'`;                
             });
