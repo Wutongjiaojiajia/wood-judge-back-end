@@ -29,19 +29,36 @@ module.exports={
             let msg = "";
             // 校验
             switch (true) {
-                case publicUtils.validateInteger(req.body.thickness):
-                    msg = "板材厚度必须为正整数";
+                case !publicUtils.validateInteger(req.body.thickness):
+                    msg = "板材厚度必须为整数";
                     break;
-                
-                default:
+                case !publicUtils.validateCorrectMoney(req.body.A):
+                    msg = "请输入正确的AA板价钱";
+                    break;
+                case !publicUtils.validateCorrectMoney(req.body.B):
+                    msg = "请输入正确的AB板价钱";
+                    break;
+                case !publicUtils.validateCorrectMoney(req.body.C):
+                    msg = "请输入正确的CC板价钱";
                     break;
             }
+            if(msg!==""){
+                res.send(resultUtils.operateFailureResult(0,msg));
+                return;
+            }
+            // 校验是否有重复数据
             let validRepeatObj = {
                 thickness:req.body.thickness
+            };
+            let { queryTotalsql } = await sqlTmpl.querySql(tableName,validRepeatObj);
+            let { result } = await connection(queryTotalsql);    //查询总数
+            if(result[0].Total > 0){
+                res.send(resultUtils.operateFailureResult(0,'当前厚度已存在，请重新填写'));
+            }else{
+                let sql = await sqlTmpl.addSql(tableName,req.body);
+                await connection(sql);
+                res.send(resultUtils.operateSuccessResult(1,"新增成功",null));
             }
-            let sql = await sqlTmpl.addSql(tableName,req.body);
-            await connection(sql);
-            res.send(resultUtils.operateSuccessResult(1,"新增成功",null));
         } catch (error) {
             switch (true) {
                 case error == "":
@@ -56,6 +73,23 @@ module.exports={
     //更新板价信息
     updatePriceMaintainData: async (req,res,next)=>{
         try {
+            let msg = "";
+            // 校验
+            switch (true) {
+                case !publicUtils.validateCorrectMoney(req.body.A):
+                    msg = "请输入正确的AA板价钱";
+                    break;
+                case !publicUtils.validateCorrectMoney(req.body.B):
+                    msg = "请输入正确的AB板价钱";
+                    break;
+                case !publicUtils.validateCorrectMoney(req.body.C):
+                    msg = "请输入正确的CC板价钱";
+                    break;
+            }
+            if(msg!==""){
+                res.send(resultUtils.operateFailureResult(0,msg));
+                return;
+            }
             let sql = await sqlTmpl.updateSql(tableName,req.body);
             await connection(sql);
             res.send(resultUtils.operateSuccessResult(1,"编辑成功",null));
