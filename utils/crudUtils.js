@@ -25,7 +25,8 @@ const publicUtils=require('./publicUtils');
  * */
 function querySql(tableName,condition){
     return new Promise((resolve,reject)=>{
-        let sql=`SELECT * FROM ${tableName} WHERE 1=1 `;
+        let queryResultsql=`SELECT * FROM ${tableName} WHERE 1=1 `;
+        let queryTotalsql=`SELECT COUNT(1) as Total FROM ${tableName} WHERE 1=1 `;
         //精确交集查询
         if(condition.eqParams){
             let tempObj=JSON.parse(condition.eqParams);     // {"name":"jimmy"}
@@ -44,7 +45,8 @@ function querySql(tableName,condition){
                                 tempStr=`${tempObj[item]}`;
                                 break;
                         }
-                        sql+=`AND ${item}=${tempStr} `;
+                        queryResultsql+=`AND ${item}=${tempStr} `;
+                        queryTotalsql+=`AND ${item}=${tempStr} `;
                     })
                 }
             }else{
@@ -66,8 +68,9 @@ function querySql(tableName,condition){
                                 tempStr=`${tempObj[item]}`;
                                 break;
                         }
-                        sql+=`AND ${item} LIKE '%${tempStr}%' `;
-                    })
+                        queryResultsql+=`AND ${item} LIKE '%${tempStr}%' `;
+                        queryTotalsql+=`AND ${item} LIKE '%${tempStr}%' `;
+                    });
                 }
             }else{
                 reject("");
@@ -84,7 +87,8 @@ function querySql(tableName,condition){
                         valueArr.forEach((vItem,vIndex) => {
                             tempStr+=vIndex===0?`\'${vItem}\'`:`,\'${vItem}\'`;
                         });
-                        sql+=`AND ${item} IN (${tempStr}) `;
+                        queryResultsql+=`AND ${item} IN (${tempStr}) `;
+                        queryTotalsql+=`AND ${item} IN (${tempStr}) `;
                     });
                 }
             }else{
@@ -102,7 +106,8 @@ function querySql(tableName,condition){
                         valueArr.forEach((vItem,vIndex) => {
                             tempStr+=vIndex===0?`\'${vItem}\'`:`,\'${vItem}\'`;                        
                         });
-                        sql+=`AND ${item} NOT IN (${tempStr}) `;
+                        queryResultsql+=`AND ${item} NOT IN (${tempStr}) `;
+                        queryTotalsql+=`AND ${item} NOT IN (${tempStr}) `;
                     });
                 }
             }else{
@@ -113,7 +118,8 @@ function querySql(tableName,condition){
         if(condition.orderBy){      // {"orderBy":"name DESC,age"}
             if(typeof(condition.orderBy)==='string'){
                 let tempStr=condition.orderBy.replace(/\"/g,"").replace(/\'/g,"");
-                sql+=`ORDER BY ${tempStr} `;
+                queryResultsql+=`ORDER BY ${tempStr} `;
+                queryTotalsql+=`ORDER BY ${tempStr} `;
             }else{
                 reject("");
             }
@@ -124,12 +130,15 @@ function querySql(tableName,condition){
             if(publicUtils.validPositiveInteger(condition.pageSize) && publicUtils.validPositiveInteger(condition.currentPage)){
                 let currentPage=Number(condition.currentPage);
                 let pageSize=Number(condition.pageSize);
-                sql+=`LIMIT ${(currentPage-1)*pageSize},${pageSize}`;
+                queryResultsql+=`LIMIT ${(currentPage-1)*pageSize},${pageSize}`;
             }else{
                 reject("");
             }
         }
-        resolve(sql);
+        resolve({
+            queryResultsql,
+            queryTotalsql
+        });
     })
 }
 /**

@@ -6,10 +6,11 @@ module.exports={
     //查询全部板价信息或根据条件进行查询
     getPriceMaintainList: async (req,res,next)=>{
         try {
-            let sql = await sqlTmpl.querySql(tableName,req.query);
-            let { err,result,fields } = await connection(sql);
+            let { queryResultsql,queryTotalsql } = await sqlTmpl.querySql(tableName,req.query);
+            let { result } = await connection(queryResultsql);  //查询数据
+            let totalInfo = await connection(queryTotalsql);    //查询总数
             let rows = JSON.parse(JSON.stringify(result));
-            res.send(resultUtils.querySuccessResult(1,"查询成功",rows,rows.length));
+            res.send(resultUtils.querySuccessResult(1,"查询成功",rows,totalInfo.result[0].Total));
         } catch (error) {
             switch (true) {
                 case error == "":
