@@ -1,6 +1,7 @@
 const connection=require('../config/databaseConfig');
 const resultUtils=require('../utils/resultUtils');
 const sqlTmpl=require('../utils/crudUtils');
+const publicUtils=require('../utils/publicUtils');
 const tableName = 'tbl_priceMaintain';
 module.exports={
     //查询全部板价信息或根据条件进行查询
@@ -25,6 +26,19 @@ module.exports={
     //新增板价信息
     addPriceMaintainData: async (req,res,next)=>{
         try {
+            let msg = "";
+            // 校验
+            switch (true) {
+                case publicUtils.validateInteger(req.body.thickness):
+                    msg = "板材厚度必须为正整数";
+                    break;
+                
+                default:
+                    break;
+            }
+            let validRepeatObj = {
+                thickness:req.body.thickness
+            }
             let sql = await sqlTmpl.addSql(tableName,req.body);
             await connection(sql);
             res.send(resultUtils.operateSuccessResult(1,"新增成功",null));
