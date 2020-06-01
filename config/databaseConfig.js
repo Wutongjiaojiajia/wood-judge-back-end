@@ -17,16 +17,25 @@ const databaseConfig={
 }
 let pool=mysql.createPool(databaseConfig[process.env.NODE_ENV]);
 
-//查询建立连接池 释放连接
-function connection(sql,callback) {
-    pool.getConnection((err,connect)=>{
-        if(err){
-            callback(err,null,null);
-            return;
-        }
-        connect.query(sql,(qerr,result,fields)=>{
-            connect.release();
-            callback(qerr,result,fields);
+// 查询建立连接池 释放连接
+function connection(sql) {
+    return new Promise((resolve,reject)=>{
+        pool.getConnection((err,connect)=>{
+            if(err){
+                reject({
+                    err:err,
+                    result:null,
+                    fields:null
+                });
+            }
+            connect.query(sql,(qerr,result,fields)=>{
+                connect.release();
+                resolve({
+                    err:qerr,
+                    result:result,
+                    fields:fields
+                });
+            })
         })
     })
 }
