@@ -4,22 +4,26 @@ on:
     branches: # 当推送分支时
       - master
 env:
-  ACCESS_TOKEN: ${{secrets.ACCESS_TOKEN}}  #新建的TOKEN
-  aliyun_docker_username: ${{secrets.aliyun_docker_username}}
-  aliyun_docker_password: ${{secrets.aliyun_docker_password}}
+  ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}  #新建的TOKEN
+  aliyun_docker_username: ${{ secrets.aliyun_docker_username }}
+  aliyun_docker_password: ${{ secrets.aliyun_docker_password }}
+  NODE_VERSION: '10.x'
 jobs:
   #构建安装依赖，构建文件
-	build-production: 
-    runs-on: ubuntu-latest
+	build-production:
+		name: Build Service
+    	runs-on: ubuntu-latest
 		steps:
 			# 将代码拷贝到虚拟机
-			- name: checkout 
-				uses: actions/checkout@v2
+			- uses: actions/checkout@v2
 			# 安装使用 node:12
-			# - name: setup Node.js 10.x
-			 	# uses: actions/setup-node@v1
-				# with:
-			 		# node-version: '10.x'
+			- name: setup Node.js ${{ env.NODE_VERSION }}
+			 	uses: actions/setup-node@v1
+				with:
+					node-version: ${{ env.NODE_VERSION }}
+			- name: test
+				run: |
+					echo node -v
 			# 安装依赖
 			# - name: Install Dependencies And Build 
 				# run: | 
