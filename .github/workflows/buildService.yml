@@ -5,7 +5,6 @@ on:
       - master
 jobs:
 	build:
-		name: BuildProcess
 		runs-on: ubuntu-latest
 		steps:
 			# 将代码拷贝到虚拟机
