@@ -45,7 +45,7 @@ jobs:
     job3:
         needs: job2
         runs-on: unbuntu-latest
-        service:
+        services:
             nginx:
                 image: nginx
                 ports:
