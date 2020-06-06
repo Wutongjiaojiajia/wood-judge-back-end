@@ -5,9 +5,9 @@ on:
         # 只有当推送代码到mater分支才执行
         # branches:
         #     - master
-        # # 只有当serive文件发生变动才执行
-        # path:
-        #     - service/*
+        # 只有当serive文件发生变动才执行
+        path:
+            - service/*
 jobs:
     job1:
         # 跑在哪个系统上
