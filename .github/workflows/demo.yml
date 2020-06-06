@@ -1,7 +1,7 @@
 name: MYCI
 on:
     # 发生在推送事件时
-    pull-request:
+    push:
         # 只有当推送代码到mater分支才执行
         # branches:
         #     - master

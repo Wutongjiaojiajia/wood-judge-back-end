@@ -27,11 +27,10 @@ jobs:
     - name: Build Docker
       uses: docker/build-push-action@v1
       with:
-        # username: ${{ secrets.ALIYUN_DOCKER_USERNAME }}
-        # password: ${{ secrets.ALIYUN_DOCKER_PASSWORD }}
-        username: 唔通叫家家
-        password: Aa19961023.
         repository: registry.cn-shenzhen.aliyuncs.com/wutongjiaojiajia/wood-judge-back-end
+        username: ${{ secrets.ALIYUN_DOCKER_USERNAME }}
+        password: ${{ secrets.ALIYUN_DOCKER_PASSWORD }}
+        registry: registry.cn-shenzhen.aliyuncs.com
         tags: master
         dockerfile: ../../
         always_pull: true
