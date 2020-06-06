@@ -32,7 +32,7 @@ jobs:
         password: ${{ secrets.ALIYUN_DOCKER_PASSWORD }}
         registry: registry.cn-shenzhen.aliyuncs.com
         tags: master
-        dockerfile: ../Dockerfile
+        path: ../..
         always_pull: true
 
       
