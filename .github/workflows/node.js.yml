@@ -27,6 +27,6 @@ jobs:
     - name: Build Docker
       run: |
       docker login --username=${{ secrets.ALIYUN_DOCKER_USERNAME }} --password=${{ secrets.ALIYUN_DOCKER_PASSWORD }} registry.cn-shenzhen.aliyuncs.com
-      docker build -t registry.cn-shenzhen.aliyuncs.com/wutongjiaojiajia/wood-judge-back-end:master .
+      docker build --f /Dockerfile . --tag registry.cn-shenzhen.aliyuncs.com/wutongjiaojiajia/wood-judge-back-end:master
       docker push registry.cn-shenzhen.aliyuncs.com/wutongjiaojiajia/wood-judge-back-end:master
       
