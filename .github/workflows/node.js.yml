@@ -4,19 +4,29 @@
 name: wood-back-end
 on:
   push:
-    branches: [ master ]
+    # 只有当推送代码到mater分支才执行
+    branches: 
+      - master
 jobs:
   build:
+    # 跑在哪个系统上
     runs-on: ubuntu-latest
     steps:
+    # 官方提供的actions复制代码到Github服务器上
     - name: Copy Code To Github
       uses: actions/checkout@v2
+    # 配置Node.js环境
     - name: Use Node.js 10.x
       uses: actions/setup-node@v1
       with:
-        node-version: 10.x
+        node-version: '10.x'
+    # 安装依赖
     - name: Install Dependencies
-      run: npm i
-    - name: Run Script
+      run: npm install
+    # 打包镜像
+    - name: Build Docker
       run: |
-        echo  Hello,world!
+      docker login --username=${{ secrets.ALIYUN_DOCKER_USERNAME }} --password=${{ secrets.ALIYUN_DOCKER_PASSWORD }} registry.cn-shenzhen.aliyuncs.com
+      docker build -f /Dockerfile -t registry.cn-shenzhen.aliyuncs.com/wutongjiaojiajia/wood-judge-back-end:master
+      docker push registry.cn-shenzhen.aliyuncs.com/wutongjiaojiajia/wood-judge-back-end:master
+      
