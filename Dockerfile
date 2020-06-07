@@ -14,7 +14,7 @@ WORKDIR /usr/src/wood-judge-back-end
 # 把当前目录所有文件拷贝到 Image下的 /usr/src/wood-judge-back-end 目录下
 COPY . /usr/src/wood-judge-back-end
 
-# RUN npm install
+RUN npm install
 
 EXPOSE 3000
 
