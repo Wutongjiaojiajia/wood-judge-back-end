@@ -1,7 +1,7 @@
 # This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 
-name: wood-back-end
+name: Node.js CI
 on:
   push:
     # 只有当推送代码到mater分支才执行
@@ -11,28 +11,36 @@ jobs:
   build:
     # 跑在哪个系统上
     runs-on: ubuntu-latest
+    container: node:12.16-alpine
     steps:
     # 官方提供的actions复制代码到Github服务器上
-    - name: Copy Code To Github
+    - name: Checkout repository code
       uses: actions/checkout@v2
-    # 配置Node.js环境
-    - name: Use Node.js 10.x
-      uses: actions/setup-node@v1
+    # 创建使用缓存（使用缓存可加速工作流的执行）
+    - name: Cache node modules
+      uses: actions/cache@v1
+      env:
+        cache-name: cache-node-modules
       with:
-        node-version: '10.x'
+        path: ./node_modules
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-build-${{ env.cache-name }}-
+          ${{ runner.os }}-build-
+          ${{ runner.os }}-
     # 安装依赖
     - name: Install Dependencies
       run: npm install
-    # 打包镜像
-    - name: Build Docker
-      uses: docker/build-push-action@v1
-      with:
-        repository: registry.cn-shenzhen.aliyuncs.com/wutongjiaojiajia/wood-judge-back-end
-        username: ${{ secrets.ALIYUN_DOCKER_USERNAME }}
-        password: ${{ secrets.ALIYUN_DOCKER_PASSWORD }}
-        registry: registry.cn-shenzhen.aliyuncs.com
-        path: ../../
-        tags: master
-        always_pull: true
+    # # 打包镜像
+    # - name: Build Docker
+    #   uses: docker/build-push-action@v1
+    #   with:
+    #     repository: registry.cn-shenzhen.aliyuncs.com/wutongjiaojiajia/wood-judge-back-end
+    #     username: ${{ secrets.ALIYUN_DOCKER_USERNAME }}
+    #     password: ${{ secrets.ALIYUN_DOCKER_PASSWORD }}
+    #     registry: registry.cn-shenzhen.aliyuncs.com
+    #     path: ../../
+    #     tags: master
+    #     always_pull: true
 
       
