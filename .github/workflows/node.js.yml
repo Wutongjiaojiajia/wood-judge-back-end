@@ -31,6 +31,7 @@ jobs:
         username: ${{ secrets.ALIYUN_DOCKER_USERNAME }}
         password: ${{ secrets.ALIYUN_DOCKER_PASSWORD }}
         registry: registry.cn-shenzhen.aliyuncs.com
+        path: ../../
         tags: master
         always_pull: true
 
