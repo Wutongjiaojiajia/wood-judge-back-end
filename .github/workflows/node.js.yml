@@ -65,7 +65,7 @@ jobs:
   deploy:
     runs-on: [self-hosted,linux]
     needs: package
-    env:
+    # env:
       # USERNAME: ${{ secrets.ALIYUN_DOCKER_USERNAME }}
       # PASSWORD: ${{ secrets.ALIYUN_DOCKER_PASSWORD }}
       # CONTAINER_IMAGE: wutongjiaojiajia/wood-judge-back-end:master
