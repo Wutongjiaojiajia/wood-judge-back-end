@@ -39,12 +39,6 @@ jobs:
     # 安装依赖
     - name: Install Dependencies
       run: npm install
-    # 测试env
-    - name: Test env
-      run: |
-        echo $IMAGE
-        echo ${{ env.IMAGE }}
-        echo ${{ env.cache-name }}
   # 添加一个工作打包应用的Docker镜像
   package:
     runs-on: ubuntu-latest
