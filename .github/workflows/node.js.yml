@@ -59,7 +59,7 @@ jobs:
     steps:
       # 拉取镜像
       - name: Docker pull image
-        run: docker image pull $CONTAINER_IMAGE
+        run: docker image pull registry.cn-shenzhen.aliyuncs.com/$CONTAINER_IMAGE
       # 停止容器
       - name: Docker stop container
         run: docker container stop $CONTAINER_NAME
@@ -70,7 +70,7 @@ jobs:
       # 运行容器 映射端口
       - name: Docker run container
         if: always()
-        run: docker container run --name $CONTAINER_NAME -d -p 8000:3000 $CONTAINER_IMAGE
+        run: docker container run --name $CONTAINER_NAME -d -p 8000:3000 registry.cn-shenzhen.aliyuncs.com/$CONTAINER_IMAGE
       # 清理残存一些临时的、没有被使用的镜像文件
       - name: Prune images
         if: always()
