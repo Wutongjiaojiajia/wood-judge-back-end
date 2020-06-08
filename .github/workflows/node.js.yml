@@ -7,6 +7,13 @@ on:
     # 只有当推送代码到mater分支才执行
     branches: 
       - master
+env:
+  USERNAME: ${{ secrets.ALIYUN_DOCKER_USERNAME }}
+  PASSWORD: ${{ secrets.ALIYUN_DOCKER_PASSWORD }}
+  REGISTRY: registry.cn-shenzhen.aliyuncs.com
+  IMAGE: wutongjiaojiajia/wood-judge-back-end
+  TAG: master
+  CONTAINER_NAME: wood-judge-back-end
 jobs:
   # 创建一个执行测试CI工作流
   build:
@@ -44,22 +51,33 @@ jobs:
       - name: Build & Push container image
         uses: mr-smithers-excellent/docker-build-push@v2
         with:
-          image: wutongjiaojiajia/wood-judge-back-end
-          tag: master
-          registry: registry.cn-shenzhen.aliyuncs.com
-          username: ${{ secrets.ALIYUN_DOCKER_USERNAME }}
-          password: ${{ secrets.ALIYUN_DOCKER_PASSWORD }}
+          # image: wutongjiaojiajia/wood-judge-back-end
+          # tag: master
+          # registry: registry.cn-shenzhen.aliyuncs.com
+          # username: ${{ secrets.ALIYUN_DOCKER_USERNAME }}
+          # password: ${{ secrets.ALIYUN_DOCKER_PASSWORD }}
+          image: $IMAGE
+          tag: $TAG
+          registry: $REGISTRY
+          username: $USERNAME
+          password: $PASSWORD
   # 添加一个工作来自动部署
   deploy:
     runs-on: [self-hosted,linux]
     needs: package
     env:
-      CONTAINER_IMAGE: wutongjiaojiajia/wood-judge-back-end:master
-      CONTAINER_NAME: wood-judge-back-end
+      # USERNAME: ${{ secrets.ALIYUN_DOCKER_USERNAME }}
+      # PASSWORD: ${{ secrets.ALIYUN_DOCKER_PASSWORD }}
+      # CONTAINER_IMAGE: wutongjiaojiajia/wood-judge-back-end:master
+      # CONTAINER_NAME: wood-judge-back-end
     steps:
+      # 登录阿里云
+      - name: Login Aliyun Docker
+        run: docker login --username=$USERNAME --password=$PASSWORD $REGISTRY
       # 拉取镜像
       - name: Docker pull image
-        run: docker image pull registry.cn-shenzhen.aliyuncs.com/$CONTAINER_IMAGE
+        # run: docker image pull registry.cn-shenzhen.aliyuncs.com/$CONTAINER_IMAGE
+        run: docker image pull $REGISTRY/$IMAGE:$TAG
       # 停止容器
       - name: Docker stop container
         run: docker container stop $CONTAINER_NAME
@@ -70,7 +88,8 @@ jobs:
       # 运行容器 映射端口
       - name: Docker run container
         if: always()
-        run: docker container run --name $CONTAINER_NAME -d -p 8000:3000 registry.cn-shenzhen.aliyuncs.com/$CONTAINER_IMAGE
+        # run: docker container run --name $CONTAINER_NAME -d -p 8000:3000 registry.cn-shenzhen.aliyuncs.com/$CONTAINER_IMAGE
+        run: docker container run --name $CONTAINER_NAME -d -p 8000:3000 $REGISTRY/$IMAGE:$TAG
       # 清理残存一些临时的、没有被使用的镜像文件
       - name: Prune images
         if: always()
