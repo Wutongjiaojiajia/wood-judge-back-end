@@ -8,6 +8,7 @@ on:
     branches: 
       - master
 jobs:
+  # 创建一个执行测试CI工作流
   build:
     # 跑在哪个系统上
     runs-on: ubuntu-latest
@@ -31,17 +32,7 @@ jobs:
     # 安装依赖
     - name: Install Dependencies
       run: npm install
-    # # 打包镜像
-    # - name: Build Docker
-    #   uses: docker/build-push-action@v1
-    #   with:
-    #     repository: registry.cn-shenzhen.aliyuncs.com/wutongjiaojiajia/wood-judge-back-end
-    #     username: ${{ secrets.ALIYUN_DOCKER_USERNAME }}
-    #     password: ${{ secrets.ALIYUN_DOCKER_PASSWORD }}
-    #     registry: registry.cn-shenzhen.aliyuncs.com
-    #     path: ../../
-    #     tags: master
-    #     always_pull: true
+  # 添加一个工作打包应用的Docker镜像
   package:
     runs-on: ubuntu-latest
     needs: build
@@ -58,5 +49,31 @@ jobs:
           registry: registry.cn-shenzhen.aliyuncs.com
           username: ${{ secrets.ALIYUN_DOCKER_USERNAME }}
           password: ${{ secrets.ALIYUN_DOCKER_PASSWORD }}
+  # 添加一个工作来自动部署
+  deploy:
+    runs-on: [self-hosted,linux]
+    needs: package
+    env:
+      CONTAINER_IMAGE: wutongjiaojiajia/wood-judge-back-end:master
+      CONTAINER_NAME: wood-judge-back-end
+    steps:
+      # 拉取镜像
+      - name: Docker pull image
+        run: docker image pull $CONTAINER_IMAGE
+      # 停止容器
+      - name: Docker stop container
+        run: docker container stop $CONTAINER_NAME
+      # 删除容器
+      - name: Docker remove container
+        if: always()
+        run: docker container rm -f $CONTAINER_NAME
+      # 运行容器 映射端口
+      - name: Docker run container
+        if: always()
+        run: docker container run --name $CONTAINER_NAME -d -p 8000:3000 $CONTAINER_IMAGE
+      # 清理残存一些临时的、没有被使用的镜像文件
+      - name: Prune images
+        if: always()
+        run: docker image prune -f
 
       
