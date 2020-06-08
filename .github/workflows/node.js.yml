@@ -39,6 +39,12 @@ jobs:
     # 安装依赖
     - name: Install Dependencies
       run: npm install
+    # 测试env
+    - name: Test env
+      run: |
+        echo $IMAGE
+        echo ${{ env.IMAGE }}
+        echo ${{ env.cache-name }}
   # 添加一个工作打包应用的Docker镜像
   package:
     runs-on: ubuntu-latest
@@ -51,11 +57,6 @@ jobs:
       - name: Build & Push container image
         uses: mr-smithers-excellent/docker-build-push@v2
         with:
-          # image: wutongjiaojiajia/wood-judge-back-end
-          # tag: master
-          # registry: registry.cn-shenzhen.aliyuncs.com
-          # username: ${{ secrets.ALIYUN_DOCKER_USERNAME }}
-          # password: ${{ secrets.ALIYUN_DOCKER_PASSWORD }}
           image: ${{ env.IMAGE }}
           tag: ${{ env.TAG }}
           registry: ${{ env.REGISTRY }}
