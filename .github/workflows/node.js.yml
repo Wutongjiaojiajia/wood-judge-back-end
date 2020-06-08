@@ -51,16 +51,16 @@ jobs:
       - name: Build & Push container image
         uses: mr-smithers-excellent/docker-build-push@v2
         with:
-          # image: wutongjiaojiajia/wood-judge-back-end
-          # tag: master
-          # registry: registry.cn-shenzhen.aliyuncs.com
-          # username: ${{ secrets.ALIYUN_DOCKER_USERNAME }}
-          # password: ${{ secrets.ALIYUN_DOCKER_PASSWORD }}
-          image: $IMAGE
-          tag: $TAG
-          registry: $REGISTRY
-          username: $USERNAME
-          password: $PASSWORD
+          image: wutongjiaojiajia/wood-judge-back-end
+          tag: master
+          registry: registry.cn-shenzhen.aliyuncs.com
+          username: ${{ secrets.ALIYUN_DOCKER_USERNAME }}
+          password: ${{ secrets.ALIYUN_DOCKER_PASSWORD }}
+          # image: $IMAGE
+          # tag: $TAG
+          # registry: $REGISTRY
+          # username: $USERNAME
+          # password: $PASSWORD
   # 添加一个工作来自动部署
   deploy:
     runs-on: [self-hosted,linux]
