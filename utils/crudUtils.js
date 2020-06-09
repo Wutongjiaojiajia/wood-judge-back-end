@@ -29,7 +29,7 @@ function querySql(tableName,condition){
         let queryTotalsql=`SELECT COUNT(1) as Total FROM ${tableName} WHERE 1=1 `;
         //精确交集查询
         if(condition.eqParams){
-            let tempObj=JSON.parse(condition.eqParams);     // {"name":"jimmy"}
+            let tempObj=JSON.parse(JSON.stringify(condition.eqParams));     // {"name":"jimmy"}
             if(typeof(tempObj)==='object'){
                 if(Object.keys(tempObj).length!=0){     //eqParams里有内容
                     Object.keys(tempObj).forEach(item => {      // item -> name
@@ -55,7 +55,7 @@ function querySql(tableName,condition){
         }
         //模糊查询
         if(condition.likeParams){
-            let tempObj=JSON.parse(condition.likeParams);
+            let tempObj=JSON.parse(JSON.stringify(condition.likeParams));
             if(typeof(tempObj)==='object'){
                 if(Object.keys(tempObj).length!=0){     //likeParams里有内容
                     Object.keys(tempObj).forEach(item=>{
@@ -78,7 +78,7 @@ function querySql(tableName,condition){
         }
         //精确合集查询
         if(condition.inParams){
-            let tempObj=JSON.parse(condition.inParams);
+            let tempObj=JSON.parse(JSON.stringify(condition.inParams));
             if(typeof(tempObj)==='object'){
                 if(Object.keys(tempObj).length!=0){     //inParams里有内容
                     Object.keys(tempObj).forEach(item => {
@@ -97,7 +97,7 @@ function querySql(tableName,condition){
         }
         //精确差集查询
         if(condition.notInParams){
-            let tempObj=JSON.parse(condition.notInParams);
+            let tempObj=JSON.parse(JSON.stringify(condition.notInParams));
             if(typeof(tempObj)==='object'){
                 if(Object.keys(tempObj).length!=0){     //notInParams里有内容
                     Object.keys(tempObj).forEach(item => {

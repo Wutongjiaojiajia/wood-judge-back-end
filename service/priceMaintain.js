@@ -48,7 +48,9 @@ module.exports={
             }
             // 校验是否有重复数据
             let validRepeatObj = {
-                thickness:req.body.thickness
+                eqParams:{
+                    thickness:req.body.thickness
+                }
             };
             let { queryTotalsql } = await sqlTmpl.querySql(tableName,validRepeatObj);
             let { result } = await connection(queryTotalsql);    //查询总数
