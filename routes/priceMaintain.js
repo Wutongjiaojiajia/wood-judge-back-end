@@ -14,12 +14,12 @@ router.post('/priceMaintain/addData',(req,res,next)=>{
 })
 
 //更新板价信息
-router.put('/priceMaintain/updateData',(req,res,next)=>{
+router.post('/priceMaintain/updateData',(req,res,next)=>{
     user.updatePriceMaintainData(req,res,next);
 })
 
 //删除板价信息
-router.delete('/priceMaintain/deleteData',(req,res,next)=>{
+router.post('/priceMaintain/deleteData',(req,res,next)=>{
     user.deletePriceMaintainData(req,res,next);
 })
 
