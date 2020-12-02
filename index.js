@@ -16,7 +16,7 @@ const http = require('http');
 const fs = require('fs');
 const httpsOption = {
 	key:fs.readFileSync('./cert/4855634_node.wutongjiaojiajia.cn.key'),
-	cert:fs.readFileSync('./cert/4855634_node.wutongjiaojiajia.cn.crt')
+	cert:fs.readFileSync('./cert/4855634_node.wutongjiaojiajia.cn.pem')
 }
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
