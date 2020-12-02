@@ -58,7 +58,7 @@ jobs:
           password: ${{ env.PASSWORD }}
   # 添加一个工作来自动部署
   deploy:
-    runs-on: [self-hosted,linux]
+    runs-on: [self-hosted,Linux]
     needs: package
     steps:
       # 登录阿里云

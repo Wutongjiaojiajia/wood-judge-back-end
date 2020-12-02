@@ -39,10 +39,10 @@ readFileName('routes',(fileName)=>{
 	});
 })
 
-https.createServer(httpsOption,app).listen(3000,()=>{
-	console.log('running at port 3000...');
-});
-
-// app.listen(3000,()=>{
+// https.createServer(httpsOption,app).listen(3000,()=>{
 // 	console.log('running at port 3000...');
-// })
+// });
+
+app.listen(3000,()=>{
+	console.log('running at port 3000...');
+})
