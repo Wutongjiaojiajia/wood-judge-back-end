@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/Wutongjiaojiajia/wood-judge-back-end.git#readme",
   "dependencies": {
+    "axios": "^0.21.1",
     "body-parser": "^1.18.3",
     "express": "^4.16.4",
     "mysql": "^2.17.1"
