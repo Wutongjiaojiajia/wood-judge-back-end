@@ -4,7 +4,7 @@ process.env.NODE_ENV='dev';
 
 const databaseConfig={
     dev:{
-        host:'120.24.20.165',   //数据库地址
+        host:'106.75.133.13',   //数据库地址
         port:'3306',
         user:'root',    //账户
         password:'Aa19961023.',  //密码
